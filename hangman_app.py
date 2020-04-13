@@ -2,9 +2,7 @@
    hangman_app.py is an app for playing hangman in the terminal
    it is also used as a module in the hangman_webapp flask app
 """
-
-
-def play_hangman():
+def generate_random_word():
     import csv
     import random
     cool = []
@@ -20,16 +18,15 @@ def play_hangman():
     print(guess)
     print(len(guess))
     counter=len(unique)
+generate_random_word()
 
+def play_hangman():
     want_to_play = True
-
-
     while (want_to_play):
         guessed_lettersright= []
         rightcounter=0
         guessed_letterswrong= ["-","-","-","-","-","-"]
         guesses_left = 10
-        word = guess
         letter = input("Please input a letter >")
         done = False
         blanks = "- "*len(guess)
@@ -38,8 +35,8 @@ def play_hangman():
             if letter in guessed_letterswrong or letter in guessed_lettersright:
                 guesses_left-=1
                 print("You have already guessed that letter, guess another one!")
-              
-            elif letter not in word:
+
+            elif letter not in guess:
                 guessed_letterswrong.remove("-")
                 guessed_letterswrong.append(letter)
                 print("This letter is not in the word, guess again.")
@@ -54,18 +51,18 @@ def play_hangman():
                 print("This letter is in the word!")
                 #add letter to guessed letters"
                 #tell user the letter is in the word"
-    
+
             if guesses_left==0:
                 print("The number of guesses left is zero, You lose!")
                 done=True
             #set done to be true and tell the user they lost!"
             if counter==rightcounter:
-                print("You got the word correct! It was",guess+ ". You win!")
+                print("You got the word correct! It was"+guess+ ". You win!")
                 done=True
                 break
             else:
                 print(guessed_letterswrong)
-               
+
                 #print the word with a dash for each letter not in guessed_letters"
                 letter = input("Type in another letter")
             def is_letter_in_word(check,guesses):
@@ -76,7 +73,7 @@ def play_hangman():
                 return True
             #def is_guess_correct(check, guesses):
                 #for let
-            
+
                 #all the letters in the word have been guessed"
                 #set done to be true and tell the user they won!"
             is_letter_in_word(check, guessed_lettersright)
@@ -84,6 +81,5 @@ def play_hangman():
         if want_to_play == "Done" or want_to_play == "done":
             done = True
             break
-
 if __name__ == '__main__':
     play_hangman()
