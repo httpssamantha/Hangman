@@ -28,7 +28,7 @@ def play():
 @app.route('/play',methods=['GET','POST'])
 def hangman():
 	want_to_play = True
-    while (want_to_play):
+    while want_to_play = True:
         guessed_lettersright= []
         rightcounter=0
         guessed_letterswrong= []
@@ -63,6 +63,7 @@ def hangman():
                         print("this letter is in the word")
                         return False
                 return True
+
 	global state
 	if request.method == 'GET':
 		return play()
