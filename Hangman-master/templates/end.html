@@ -1,0 +1,15 @@
+{% extends "fancylayout.html" %}
+
+{% block content %}
+  <div class="jumbotron">
+    <h1>Hangman</h1>
+  </div>
+
+  <p>your word was: {{state['first']['copy']}}</p>
+  <br>
+<iframe src="https://giphy.com/embed/ehhuGD0nByYxO" width="280" height="160" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+<br>
+  <a class="btn btn-info" href="/start">New Game</a>
+
+
+{% endblock %}
