@@ -16,7 +16,9 @@ state = {'first':{'guesses':[],
 		 'copy': " ",
 		 'word_so_far':"-----------",
 		 'done':False},
-		 'second':{'right':[]}}
+		 'second':{'right':[],
+		 'limit': 10},
+		 'check': []}
 
 @app.route('/')
 @app.route('/main')
@@ -31,13 +33,16 @@ def intro():
 @app.route('/start')
 def start():
 	global state
+	state['second']['limit'] = 10
 	state['first']['copy'] = ' '
 	state['first']['word'] = hangman_app.generate_random_word()
+	state['second']['check'] = list(state['first']['word'])
+	print(state)
 	state['first']['copy'] = copy.copy(state['first']['word'])
 	state['first']['guesses'] = []
 	state['first']['word'] = ''.join(set(state['first']['word']))
 	word_so_far = hangman_app.get_word_so_far(state['first']['copy'])
-	state['first']['word_so_far'] = word_so_far
+	state['first']['word_so_far'] = len(state['second']['check']) * "- "
 	state['first']['word'] = list(set(state['first']['word']))
 	print(state)
 	return render_template("start.html",state=state)
@@ -56,11 +61,21 @@ def play_hangman():
 			for letter in check:
 				if letter not in check:
 					return False
-	state['first']['guesses'] += [letter]
 	if letter in state['first']['word']:
+		state['first']['guesses'] += letter
 		state['second']['right'] += letter
+		state['second']['limit'] -= 1
+
+
 	if letter not in state['first']['word']:
 		state['first']['guesses'] += letter
+		state['second']['limit'] -= 1
+	if state['second']['limit'] == 0:
+		state['second']['right'] = []
+		state['first']['guesses'] = []
+		state['first']['words_so_far'] = "-----------"
+		state['first']['word'] = " "
+		return render_template("wrong.html", state=state)
 	else:
 		if len(state['first']['word']) == len(state['second']['right']):
 			print("you got it right!")
