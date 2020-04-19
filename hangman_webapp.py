@@ -6,12 +6,19 @@
 from flask import Flask, render_template, request
 import hangman_app
 app = Flask(__name__)
+import copy
+import time
+
 
 global state
-state = {'guesses':[],
+state = {'first':{'guesses':[],
 		 'word':"interesting",
+		 'copy': " ",
 		 'word_so_far':"-----------",
-		 'done':False}
+		 'done':False},
+		 'second':{'right':[],
+		 'limit': 10},
+		 'check': []}
 
 @app.route('/')
 @app.route('/main')
@@ -26,30 +33,81 @@ def intro():
 @app.route('/start')
 def start():
 	global state
-	state['word'] = hangman_app.generate_random_word()
-	state['guesses'] = []
-	word_so_far = hangman_app.get_word_so_far(state['word'])
-	state['word_so_far'] = word_so_far
+	state['second']['limit'] = 10
+	state['first']['copy'] = ' '
+	state['first']['word'] = hangman_app.generate_random_word()
+	state['second']['check'] = list(state['first']['word'])
 	print(state)
-	return render_template("play.html",state=state)
+	state['first']['copy'] = copy.copy(state['first']['word'])
+	state['first']['guesses'] = []
+	state['first']['word'] = ''.join(set(state['first']['word']))
+	word_so_far = hangman_app.get_word_so_far(state['first']['copy'])
+	state['first']['word_so_far'] = len(state['second']['check']) * "- "
+	state['first']['word'] = list(set(state['first']['word']))
+	print(state)
+	return render_template("start.html",state=state)
 
 @app.route('/play',methods=['GET','POST'])
 def play_hangman():
-	""" plays hangman game """
 	global state
+	okay = len(state['first']['word'])
+	hello = len(state['first']['guesses'])
 	if request.method == 'GET':
 		return start()
 
 	elif request.method == 'POST':
 		letter = request.form['guess']
+		def is_letter_in_word(check,guesses):
+			for letter in check:
+				if letter not in check:
+					return False
+	if letter in state['first']['word']:
+		state['first']['guesses'] += letter
+		state['second']['right'] += letter
+		state['second']['limit'] -= 1
+
+
+	if letter not in state['first']['word']:
+		state['first']['guesses'] += letter
+		state['second']['limit'] -= 1
+	if state['second']['limit'] == 0:
+		state['second']['right'] = []
+		state['first']['guesses'] = []
+		state['first']['words_so_far'] = "-----------"
+		state['first']['word'] = " "
+		return render_template("wrong.html", state=state)
+	else:
+		if len(state['first']['word']) == len(state['second']['right']):
+			print("you got it right!")
+			print("your word was "+state['first']['copy'])
+			state['second']['right'] = []
+			state['first']['guesses'] = []
+			state['first']['words_so_far'] = "-----------"
+			state['first']['word'] = " "
+			time.sleep(2)
+			return render_template("end.html",state=state)
+
+
+	print(state)
+
 		# check if letter has already been guessed
 		# and generate a response to guess again
 		# else check if letter is in word
 		# then see if the word is complete
 		# if letter not in word, then tell them
-		state['guesses'] += [letter]
-		print(state)
-		return render_template('play.html',state=state)
+		#print(state)
+		#for state['guesses'] in state['word']:
+			#if len(state['guesses']) >= len(state['word']):
+
+			#if [letter] in state['word']:
+				#print("this letter is in the word")
+				#elif state['guesses'] == state['word']:
+				#print("you got it right!")
+		#if state['guesses'] == state['word']:
+			#state['done'] = True
+			#return render_template("end.html",state=state)
+
+	return render_template('play.html',state=state)
 
 
 
