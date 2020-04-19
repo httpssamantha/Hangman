@@ -1,0 +1,15 @@
+{% extends "fancylayout.html" %}
+
+{% block content %}
+  <div class="jumbotron">
+    <h1>Hangman</h1>
+  </div>
+  <p>Sorry, you're out of guesses</p>
+  <p>your word was: {{state['first']['copy']}}</p>
+  <br>
+  <p>Better luck next time! </p>
+<br>
+  <a class="btn btn-info" href="/start">New Game</a>
+
+
+{% endblock %}
